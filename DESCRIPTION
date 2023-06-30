@@ -1,0 +1,30 @@
+Package: polcaExtra
+Type: Package
+Title: Extended Interface for Latent Class Analysis Models
+Version: 0.1.0
+Maintainer: Piotr Tymoszuk <piotr.s.tymoszuk@gmail.com>
+Description: The package provides an extended diagnostic and graphical S3 
+    interface for latenc class models (LCA) fited with the package poLCA. 
+    Handy methods for retrieval of the model components and predictions are
+    implemented as well.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Authors@R: 
+    person("Piotr", "Tymoszuk", , "piotr.s.tymoszuk@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-0398-6034"))
+RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE)
+Depends: 
+    generics,
+    rlang
+Imports: 
+    poLCA, 
+    clustTools,
+    dplyr,
+    furrr,
+    ggplot2,
+    purrr,
+    tibble,
+    tidyr,
+    trafo
