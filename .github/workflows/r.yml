@@ -34,10 +34,10 @@ jobs:
       - name: Install dependencies
         run: |
           install.packages(c("remotes", "rcmdcheck"))
+          remotes::install_github("PiotrTymoszuk/somKernels")
           remotes::install_github("PiotrTymoszuk/trafo")
           remotes::install_github("PiotrTymoszuk/clustTools")
-          remotes::install_github("PiotrTymoszuk/somKernels")
-          remotes::install_deps(dependencies = TRUE)
+          remotes::install_deps(dependencies = TRUE)          
         shell: Rscript {0}
       - name: Check
         run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
