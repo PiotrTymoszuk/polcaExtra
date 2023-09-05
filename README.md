@@ -1,3 +1,5 @@
+[![R](https://github.com/PiotrTymoszuk/polcaExtra/actions/workflows/r.yml/badge.svg)](https://github.com/PiotrTymoszuk/polcaExtra/actions/workflows/r.yml)
+
 # polcaExtra
 Extended Interface for Latent Class Analysis Models
 
