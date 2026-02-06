@@ -49,26 +49,25 @@
     clust_variables <- components(x, type = 'variables')
 
     clust_data[clust_variables] <-
-      purrr::map_dfc(clust_data[clust_variables],
-                     ~as.numeric(.x) - 1)
+      map_dfc(clust_data[clust_variables],
+              ~as.numeric(.x) - 1)
 
-    dist_mtx <- clustTools::calculate_dist(clust_data,
-                                           method = distance_method)
+    dist_mtx <- calculate_dist(clust_data, method = distance_method)
 
     assignment <-
       components(x, type = 'assignment')[c('observation', 'class')]
 
-    assignment <- trafo::set_colnames(assignment, c('observation', 'clust_id'))
+    assignment <- set_colnames(assignment, c('observation', 'clust_id'))
 
     ## cluster object ------
 
-    clustTools::clust_analysis(list(data = rlang::quo(clust_data),
-                                    dist_mtx = dist_mtx,
-                                    dist_method = distance_method,
-                                    clust_obj = NULL,
-                                    clust_fun = 'prediction',
-                                    clust_assignment = assignment,
-                                    dots = NULL))
+    clust_analysis(list(data = quo(clust_data),
+                        dist_mtx = dist_mtx,
+                        dist_method = distance_method,
+                        clust_obj = NULL,
+                        clust_fun = 'prediction',
+                        clust_assignment = assignment,
+                        dots = NULL))
 
   }
 
@@ -106,24 +105,22 @@
     clust_variables <- names(data)
 
     data[clust_variables] <-
-      purrr::map_dfc(data[clust_variables],
-                     ~as.numeric(.x) - 1)
+      map_dfc(data[clust_variables], ~as.numeric(.x) - 1)
 
-    dist_mtx <- clustTools::calculate_dist(data,
-                                           method = distance_method)
+    dist_mtx <- calculate_dist(data, method = distance_method)
 
-    assignment <- trafo::set_colnames(x[c('observation', 'class')],
-                                      c('observation', 'clust_id'))
+    assignment <- set_colnames(x[c('observation', 'class')],
+                               c('observation', 'clust_id'))
 
     ## cluster object ------
 
-    clustTools::clust_analysis(list(data = rlang::quo(data),
-                                    dist_mtx = dist_mtx,
-                                    dist_method = distance_method,
-                                    clust_obj = NULL,
-                                    clust_fun = 'prediction',
-                                    clust_assignment = assignment,
-                                    dots = NULL))
+    clust_analysis(list(data = quo(data),
+                        dist_mtx = dist_mtx,
+                        dist_method = distance_method,
+                        clust_obj = NULL,
+                        clust_fun = 'prediction',
+                        clust_assignment = assignment,
+                        dots = NULL))
 
 
   }

@@ -61,7 +61,7 @@
     }
 
     input_classes <-
-      purrr::map_lgl(x[['y']], is.factor)
+      map_lgl(x[['y']], is.factor)
 
     if(any(!input_classes)) {
 

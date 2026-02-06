@@ -15,7 +15,7 @@
   point_hjitter = 0.005,
   point_wjitter = 0.005,
   flip = FALSE,
-  cust_theme = ggplot2::theme_classic(),
+  cust_theme = theme_classic(),
   ...
 )
 }

@@ -12,7 +12,7 @@ tune_lca(
   seed = NULL,
   color = "steelblue",
   size = 2,
-  cust_theme = ggplot2::theme_classic(),
+  cust_theme = theme_classic(),
   ...
 )
 }

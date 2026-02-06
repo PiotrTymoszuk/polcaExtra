@@ -48,7 +48,7 @@
                               point_hjitter = 0.005,
                               point_wjitter = 0.005,
                               flip = FALSE,
-                              cust_theme = ggplot2::theme_classic(), ...) {
+                              cust_theme = theme_classic(), ...) {
 
     ## entry control ------
 
@@ -68,7 +68,7 @@
                       c('class_distribution',
                         'class_posterior'))
 
-    if(!ggplot2::is.theme(cust_theme)) {
+    if(!is.theme(cust_theme)) {
 
       stop("'cust_theme' hast to be a valid ggplot theme object.",
            call. = FALSE)
@@ -83,59 +83,59 @@
 
     ## counts -----
 
-    distr_tbl <- dplyr::count(x, class)
+    distr_tbl <- count(x, class)
 
     ## class distribution -------
 
     if(type == 'class_distribution') {
 
-      distr_tbl <- dplyr::arrange(distr_tbl, dplyr::desc(class))
+      distr_tbl <- arrange(distr_tbl, desc(class))
 
-      distr_tbl <- dplyr::mutate(distr_tbl,
-                                 percent = n/sum(n) * 100,
-                                 y_pos = cumsum(n) - 0.5 * n)
+      distr_tbl <- mutate(distr_tbl,
+                          percent = n/sum(n) * 100,
+                          y_pos = cumsum(n) - 0.5 * n)
 
       if(flip) {
 
         out_plot <-
-          ggplot2::ggplot(distr_tbl,
-                          ggplot2::aes(y = 'Class',
-                                       x = percent,
-                                       fill = class)) +
-          ggplot2::geom_bar(color = 'black',
-                            stat = 'identity') +
-          ggplot2::geom_label(ggplot2::aes(label = signif(percent, signif_digits),
-                                           x = y_pos),
-                              size = txt_size,
-                              color = txt_color,
-                              show.legend = FALSE) +
-          ggplot2::labs(x = '% of the dataset') +
+          ggplot(distr_tbl,
+                 aes(y = 'Class',
+                     x = percent,
+                     fill = class)) +
+          geom_bar(color = 'black',
+                   stat = 'identity') +
+          geom_label(aes(label = signif(percent, signif_digits),
+                         x = y_pos),
+                     size = txt_size,
+                     color = txt_color,
+                     show.legend = FALSE) +
+          labs(x = '% of the dataset') +
           cust_theme +
-          ggplot2::theme(axis.title.y = ggplot2::element_blank())
+          theme(axis.title.y = element_blank())
 
       } else {
 
         out_plot <-
-          ggplot2::ggplot(distr_tbl,
-                          ggplot2::aes(x = 'Class',
-                                       y = percent,
-                                       fill = class)) +
-          ggplot2::geom_bar(color = 'black',
-                            stat = 'identity') +
-          ggplot2::geom_label(ggplot2::aes(label = signif(percent, signif_digits),
-                                           y = y_pos),
-                              size = txt_size,
-                              color = txt_color,
-                              show.legend = FALSE) +
-          ggplot2::labs(y = '% of the dataset') +
+          ggplot(distr_tbl,
+                 aes(x = 'Class',
+                     y = percent,
+                     fill = class)) +
+          geom_bar(color = 'black',
+                   stat = 'identity') +
+          geom_label(aes(label = signif(percent, signif_digits),
+                         y = y_pos),
+                     size = txt_size,
+                     color = txt_color,
+                     show.legend = FALSE) +
+          labs(y = '% of the dataset') +
           cust_theme +
-          ggplot2::theme(axis.title.x = ggplot2::element_blank())
+          theme(axis.title.x = element_blank())
 
       }
 
       out_plot <- out_plot +
-        ggplot2::labs(title = 'Class distribution',
-                      subtitle = paste('complete: n =', sum(distr_tbl$n)))
+        labs(title = 'Class distribution',
+             subtitle = paste('complete: n =', sum(distr_tbl$n)))
 
       return(out_plot)
 
@@ -146,58 +146,58 @@
     if(type == 'class_posterior') {
 
       n_legends <-
-        purrr::map2_chr(distr_tbl[[1]],
-                        distr_tbl[[2]],
-                        paste, sep = '\nn = ')
+        map2_chr(distr_tbl[[1]],
+                 distr_tbl[[2]],
+                 paste, sep = '\nn = ')
 
-      n_legends <- rlang::set_names(n_legends,
-                                    distr_tbl[[1]])
+      n_legends <- set_names(n_legends,
+                             distr_tbl[[1]])
 
       if(flip) {
 
         out_plot <-
-          ggplot2::ggplot(x,
-                          ggplot2::aes(y = best_p,
-                                       x = stats::reorder(observation, best_p),
-                                       fill = class)) +
-          ggplot2::facet_grid(. ~ class,
-                              scales = 'free',
-                              space = 'free',
-                              labeller = ggplot2::as_labeller(n_legends)) +
+          ggplot(x,
+                 aes(y = best_p,
+                     x = reorder(observation, best_p),
+                     fill = class)) +
+          facet_grid(. ~ class,
+                     scales = 'free',
+                     space = 'free',
+                     labeller = as_labeller(n_legends)) +
           cust_theme +
-          ggplot2::theme(axis.ticks.x = ggplot2::element_blank(),
-                         axis.text.x = ggplot2::element_blank()) +
-          ggplot2::labs(y = expression('p'[posterior]),
-                        x = 'Observation')
+          theme(axis.ticks.x = element_blank(),
+                axis.text.x = element_blank()) +
+          labs(y = expression('p'[posterior]),
+               x = 'Observation')
 
       } else {
 
         out_plot <-
-          ggplot2::ggplot(x,
-                          ggplot2::aes(x = best_p,
-                                       y = stats::reorder(observation, best_p),
-                                       fill = class)) +
-          ggplot2::facet_grid(class ~ .,
-                              scales = 'free',
-                              space = 'free',
-                              labeller = ggplot2::as_labeller(n_legends)) +
+          ggplot(x,
+                 aes(x = best_p,
+                     y = reorder(observation, best_p),
+                     fill = class)) +
+          facet_grid(class ~ .,
+                     scales = 'free',
+                     space = 'free',
+                     labeller = as_labeller(n_legends)) +
           cust_theme +
-          ggplot2::theme(axis.ticks.y = ggplot2::element_blank(),
-                         axis.text.y = ggplot2::element_blank()) +
-          ggplot2::labs(x = expression('p'[posterior]),
-                        y = 'Observation')
+          theme(axis.ticks.y = element_blank(),
+                axis.text.y = element_blank()) +
+          labs(x = expression('p'[posterior]),
+               y = 'Observation')
 
 
       }
 
       out_plot <- out_plot +
-        ggplot2::geom_point(shape = 21,
-                            size = point_size,
-                            alpha = point_alpha,
-                            position = ggplot2::position_jitter(width = point_wjitter,
-                                                                height = point_hjitter)) +
-        ggplot2::labs(title = 'Class assignment probability',
-                      subtitle = paste('complete: n =', sum(distr_tbl$n)))
+        geom_point(shape = 21,
+                   size = point_size,
+                   alpha = point_alpha,
+                   position = position_jitter(width = point_wjitter,
+                                              height = point_hjitter)) +
+        labs(title = 'Class assignment probability',
+             subtitle = paste('complete: n =', sum(distr_tbl$n)))
 
       return(out_plot)
 
@@ -272,7 +272,7 @@
                           point_hjitter = 0.005,
                           point_wjitter = 0.005,
                           flip = FALSE,
-                          cust_theme = ggplot2::theme_classic(), ...) {
+                          cust_theme = theme_classic(), ...) {
 
     ## entry control -------
 
@@ -298,7 +298,7 @@
     stopifnot(is.numeric(point_wjitter))
     stopifnot(is.logical(flip))
 
-    if(!ggplot2::is.theme(cust_theme)) {
+    if(!is.theme(cust_theme)) {
 
       stop("'cust_theme' must be a valid ggplot theme object.", call = FALSE)
 
@@ -316,10 +316,10 @@
     class_n <- components(x, type = 'class_numbers')
 
     n_legends <-
-      purrr::map2_chr(class_n[[1]], class_n[[2]],
-                      paste, sep = '\nn = ')
+      map2_chr(class_n[[1]], class_n[[2]],
+               paste, sep = '\nn = ')
 
-    n_legends <- rlang::set_names(n_legends, class_n[[1]])
+    n_legends <- set_names(n_legends, class_n[[1]])
 
     ## poLCA conditional probability plot ---------
 
@@ -353,13 +353,13 @@
 
       prior_p <- components(x, type = 'prior_p')
 
-      prior_p <- dplyr::arrange(prior_p, dplyr::desc(class))
+      prior_p <- arrange(prior_p, desc(class))
 
-      prior_p <- dplyr::mutate(prior_p,
-                               y_pos = cumsum(p_prior) - 0.5 * p_prior,
-                               plot_lab = paste(signif(p_prior, signif_digits),
-                                                signif(se_prior, signif_digits),
-                                                sep = ' \u00B1 '))
+      prior_p <- mutate(prior_p,
+                        y_pos = cumsum(p_prior) - 0.5 * p_prior,
+                        plot_lab = paste(signif(p_prior, signif_digits),
+                                         signif(se_prior, signif_digits),
+                                         sep = ' \u00B1 '))
 
     }
 
@@ -368,43 +368,43 @@
       if(flip) {
 
         out_plot <-
-          ggplot2::ggplot(prior_p,
-                           ggplot2::aes(x = p_prior,
-                                        y = 'Class',
-                                        fill = class)) +
-          ggplot2::geom_bar(stat = 'identity',
-                            color = 'black') +
-          ggplot2::geom_label(ggplot2::aes(label = signif(p_prior, signif_digits),
-                                           x = y_pos),
-                              size = txt_size,
-                              color = txt_color,
-                              show.legend = FALSE) +
+          ggplot(prior_p,
+                 aes(x = p_prior,
+                     y = 'Class',
+                     fill = class)) +
+          geom_bar(stat = 'identity',
+                   color = 'black') +
+          geom_label(aes(label = signif(p_prior, signif_digits),
+                         x = y_pos),
+                     size = txt_size,
+                     color = txt_color,
+                     show.legend = FALSE) +
           cust_theme +
-          ggplot2::theme(axis.title.y = ggplot2::element_blank()) +
-          ggplot2::labs(x = 'fraction of observations')
+          theme(axis.title.y = element_blank()) +
+          labs(x = 'fraction of observations')
 
       } else {
 
         out_plot <-
-          ggplot2::ggplot(prior_p,
-                           ggplot2::aes(y = p_prior,
-                                        x = 'Class',
-                                        fill = class)) +
-          ggplot2::geom_bar(stat = 'identity',
-                            color = 'black') +
-          ggplot2::geom_label(ggplot2::aes(label = signif(p_prior, signif_digits),
-                                           y = y_pos),
-                              size = txt_size,
-                              color = txt_color) +
+          ggplot(prior_p,
+                 aes(y = p_prior,
+                     x = 'Class',
+                     fill = class)) +
+          geom_bar(stat = 'identity',
+                   color = 'black') +
+          geom_label(aes(label = signif(p_prior, signif_digits),
+                         y = y_pos),
+                     size = txt_size,
+                     color = txt_color) +
           cust_theme +
-          ggplot2::theme(axis.title.x = ggplot2::element_blank()) +
-          ggplot2::labs(y = 'fraction of observations')
+          theme(axis.title.x = element_blank()) +
+          labs(y = 'fraction of observations')
 
       }
 
       out_plot <- out_plot +
-        ggplot2::labs(title = 'Prior probability distribution',
-                      subtitle = paste('complete: n =', sum(class_n[['n']])))
+        labs(title = 'Prior probability distribution',
+             subtitle = paste('complete: n =', sum(class_n[['n']])))
 
       return(out_plot)
 
@@ -413,25 +413,25 @@
     if(type == 'prior_se') {
 
       out_plot <-
-        ggplot2::ggplot(prior_p,
-                        ggplot2::aes(x = p_prior,
-                                     y = class,
-                                     color = class)) +
-        ggplot2::geom_errorbarh(ggplot2::aes(xmin = p_prior - se_prior,
-                                             xmax = p_prior + se_prior),
-                                height = 0) +
-        ggplot2::geom_point(shape = 16,
-                            size = point_size) +
-        ggplot2::geom_text(ggplot2::aes(label = plot_lab),
-                           size = txt_size,
-                           hjust = txt_hjust,
-                           vjust = txt_vjust) +
-        ggplot2::scale_y_discrete(labels = n_legends) +
+        ggplot(prior_p,
+               aes(x = p_prior,
+                   y = class,
+                   color = class)) +
+        geom_errorbarh(aes(xmin = p_prior - se_prior,
+                           xmax = p_prior + se_prior),
+                       height = 0) +
+        geom_point(shape = 16,
+                   size = point_size) +
+        geom_text(aes(label = plot_lab),
+                  size = txt_size,
+                  hjust = txt_hjust,
+                  vjust = txt_vjust) +
+        scale_y_discrete(labels = n_legends) +
         cust_theme +
-        ggplot2::theme(axis.title.y = ggplot2::element_blank()) +
-        ggplot2::labs(title = 'Prior probability estimates',
-                      subtitle = paste('complete: n =', sum(class_n[['n']])),
-                      x = 'Fraction of observations')
+        theme(axis.title.y = element_blank()) +
+        labs(title = 'Prior probability estimates',
+             subtitle = paste('complete: n =', sum(class_n[['n']])),
+             x = 'Fraction of observations')
 
       return(out_plot)
 
@@ -441,51 +441,52 @@
 
       plot_tbl <- components(x, type = 'probs')
 
-      levs <- purrr::map(plot_tbl, ~names(.x)[names(.x) != 'class'])
+      levs <- map(plot_tbl, ~names(.x)[names(.x) != 'class'])
 
       plot_tbl <-
-        purrr::map2(plot_tbl,
+        map2(plot_tbl,
+             levs,
+             ~pivot_longer(.x,
+                           cols = all_of(.y),
+                           names_to = 'variable',
+                           values_to = 'p_conditional'))
+
+      plot_tbl <-
+        map2(plot_tbl,
                     levs,
-                    ~tidyr::pivot_longer(.x,
-                                         cols = dplyr::all_of(.y),
-                                         names_to = 'variable',
-                                         values_to = 'p_conditional'))
+                    ~mutate(.x,
+                            variable = factor(variable, levels = .y)))
+
+      plot_tbl <- map(plot_tbl, arrange, desc(variable))
+
+      plot_tbl <- map(plot_tbl, blast, class)
 
       plot_tbl <-
-        purrr::map2(plot_tbl,
-                    levs,
-                    ~dplyr::mutate(.x,
-                                   variable = factor(variable, levels = .y)))
-
-      plot_tbl <- purrr::map(plot_tbl, dplyr::arrange, dplyr::desc(variable))
-
-      plot_tbl <- purrr::map(plot_tbl, trafo::blast, class)
-
-      plot_tbl <-
-        purrr::map(plot_tbl,
-                   purrr::map_dfr,
-                   dplyr::mutate,
-                   y_pos = cumsum(p_conditional) - 0.5 * p_conditional)
+        map(plot_tbl,
+            map_dfr,
+            mutate,
+            y_pos = cumsum(p_conditional) - 0.5 * p_conditional)
 
       plot_lst <-
-        purrr::pmap(list(x = plot_tbl,
-                         y = names(plot_tbl)),
-                    function(x, y) ggplot2::ggplot(x,
-                                                   ggplot2::aes(x = class,
-                                                                y = p_conditional,
-                                                                fill = variable)) +
-                      ggplot2::geom_bar(stat = 'identity',
-                                        color = 'black') +
-                      ggplot2::geom_label(ggplot2::aes(label = signif(p_conditional, signif_digits),
-                                                       y = y_pos),
-                                          size = txt_size,
-                                          color = txt_color) +
-                      ggplot2::scale_x_discrete(labels = n_legends) +
-                      cust_theme +
-                      ggplot2::theme(axis.title.x = ggplot2::element_blank()) +
-                      ggplot2::labs(title = y,
-                                    subtitle = paste('complete: n = ', sum(class_n[['n']])),
-                                    y = expression('p'[conditional])))
+        pmap(list(x = plot_tbl,
+                  y = names(plot_tbl)),
+             function(x, y) ggplot(x,
+                                   aes(x = class,
+                                       y = p_conditional,
+                                       fill = variable)) +
+               geom_bar(stat = 'identity',
+                        color = 'black') +
+               geom_label(aes(label = signif(p_conditional, signif_digits),
+                              y = y_pos),
+                          size = txt_size,
+                          color = txt_color,
+                          show.legend = FALSE) +
+               scale_x_discrete(labels = n_legends) +
+               cust_theme +
+               theme(axis.title.x = element_blank()) +
+               labs(title = y,
+                    subtitle = paste('complete: n = ', sum(class_n[['n']])),
+                    y = expression('p'[conditional])))
 
       return(plot_lst)
 

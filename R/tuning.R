@@ -51,11 +51,11 @@
                        seed = NULL,
                        color = 'steelblue',
                        size = 2,
-                       cust_theme = ggplot2::theme_classic(), ...) {
+                       cust_theme = theme_classic(), ...) {
 
     ## entry control -------
 
-    if(!rlang::is_formula(formula)) {
+    if(!is_formula(formula)) {
 
       stop("'formula' must be a valid R formula.", call. = FALSE)
 
@@ -88,39 +88,37 @@
     if(!is.null(seed)) seed <- TRUE
 
     models <-
-      furrr::future_map(class_range,
-                        function(x) poLCA::poLCA(formula = formula,
+      future_map(class_range,
+                        function(x) poLCA(formula = formula,
                                                  data = data,
                                                  nclass = x, ...),
-                        .options = furrr::furrr_options(seed = seed))
+                        .options = furrr_options(seed = seed))
 
-    models <- rlang::set_names(models, paste0('class_', class_range))
+    models <- set_names(models, paste0('class_', class_range))
 
-    models <- purrr::map(models, as_polcax)
+    models <- map(models, as_polcax)
 
     ## model stats ---------
 
-    stats <- purrr::map_dfr(models, summary)
+    stats <- map_dfr(models, summary)
 
     if(metric == 'none') {
 
-      stats <- dplyr::mutate(stats,
-                             optimum = NA)
+      stats <- mutate(stats, optimum = NA)
 
       opt_k <- NA
 
     } else {
 
-      stats <- dplyr::mutate(stats,
-                             optimum = ifelse(.data[[metric]] == min(.data[[metric]]),
-                                              'yes', 'no'))
+      stats <- mutate(stats,
+                      optimum = ifelse(.data[[metric]] == min(.data[[metric]]),
+                                       'yes', 'no'))
 
-      opt_k <- dplyr::filter(stats, optimum == 'yes')[['k']][1]
+      opt_k <- filter(stats, optimum == 'yes')[['k']][1]
 
     }
 
-    stats <- dplyr::mutate(stats,
-                           alert = ifelse(convergence & valid, 'no', 'yes'))
+    stats <- mutate(stats, alert = ifelse(convergence & valid, 'no', 'yes'))
 
     ## tuning plots ---------
 
@@ -130,41 +128,41 @@
     n_numbers <- nobs(models[[1]])
 
     plots <-
-      purrr::pmap(list(x = c('llik', 'aic', 'bic', 'Gsq', 'Chisq'),
-                       y = paste('LCA tuning:',
-                                 c('log-likelihood', 'AIC', 'BIC',
-                                   'deviance ratio', '\u03C7\u00B2')),
-                       z = c('log-likelihood', 'AIC', 'BIC',
-                             'deviance ratio', '\u03C7\u00B2')),
-                  function(x, y, z) ggplot2::ggplot(stats,
-                                                    ggplot2::aes(x = k,
-                                                                 y = .data[[x]],
-                                                                 color = alert)) +
-                    ggplot2::geom_path(color = color) +
-                    ggplot2::geom_point(shape = 16,
-                                        size = size) +
-                    ggplot2::scale_color_manual(values = alert_scale,
-                                                name = 'Alerts') +
-                    ggplot2::scale_x_continuous(breaks = class_range) +
-                    cust_theme +
-                    ggplot2::labs(title = y,
-                                  subtitle = paste0('observations: n = ',
-                                                    n_numbers[['observations']],
-                                                    ', variables: n = ',
-                                                    n_numbers[['variables']]),
-                                  x = 'Class number, k',
-                                  y = z))
+      pmap(list(x = c('llik', 'aic', 'bic', 'Gsq', 'Chisq'),
+                y = paste('LCA tuning:',
+                          c('log-likelihood', 'AIC', 'BIC',
+                            'deviance ratio', '\u03C7\u00B2')),
+                z = c('log-likelihood', 'AIC', 'BIC',
+                      'deviance ratio', '\u03C7\u00B2')),
+           function(x, y, z) ggplot(stats,
+                                    aes(x = k,
+                                        y = .data[[x]],
+                                        color = alert)) +
+             geom_path(color = color) +
+             geom_point(shape = 16,
+                        size = size) +
+             scale_color_manual(values = alert_scale,
+                                name = 'Alerts') +
+             scale_x_continuous(breaks = class_range) +
+             cust_theme +
+             labs(title = y,
+                  subtitle = paste0('observations: n = ',
+                                    n_numbers[['observations']],
+                                    ', variables: n = ',
+                                    n_numbers[['variables']]),
+                  x = 'Class number, k',
+                  y = z))
 
     if(!is.na(opt_k)) {
 
-      plots <- purrr::map(plots,
-                          ~.x +
-                            ggplot2::geom_vline(xintercept = opt_k,
-                                                linetype = 'dashed'))
+      plots <- map(plots,
+                   ~.x +
+                     geom_vline(xintercept = opt_k,
+                                linetype = 'dashed'))
 
     }
 
-    plots <- rlang::set_names(plots, c('llik', 'aic', 'bic', 'Gsq', 'Chisq'))
+    plots <- set_names(plots, c('llik', 'aic', 'bic', 'Gsq', 'Chisq'))
 
     ## output ------
 

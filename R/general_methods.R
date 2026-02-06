@@ -51,7 +51,7 @@
                  'npar', 'resid.df')],
         list(valid = valid))
 
-    tibble::as_tibble(summ)
+    as_tibble(summ)
 
   }
 
@@ -163,16 +163,15 @@
 
       }
 
-      post_p <- trafo::set_colnames(post_p,
-                                    object[['class_names']])
+      post_p <- set_colnames(post_p, object[['class_names']])
 
-      post_p <- trafo::set_rownames(post_p, obs_id)
+      post_p <- set_rownames(post_p, obs_id)
 
       assignment <- nodal_vote(post_p, ...)
 
-      post_p <- tibble::as_tibble(post_p)
+      post_p <- as_tibble(post_p)
 
-      post_p <- tibble::as_tibble(cbind(assignment, post_p))
+      post_p <- as_tibble(cbind(assignment, post_p))
 
       return(lca_assign(post_p))
 
@@ -182,20 +181,20 @@
 
       assignment <- components(object, type = 'posterior', ...)
 
-      class_n <- dplyr::count(assignment, class)
+      class_n <- count(assignment, class)
 
-      return(dplyr::mutate(class_n,
-                           fraction = n/sum(n),
-                           percent = fraction * 100))
+      return(mutate(class_n,
+                    fraction = n/sum(n),
+                    percent = fraction * 100))
 
     }
 
     if(type == 'prior_p') {
 
-      return(tibble::tibble(class = factor(object[['class_names']],
-                                           object[['class_names']]),
-                            p_prior = object[['P']],
-                            se_prior = object[['P.se']]))
+      return(tibble(class = factor(object[['class_names']],
+                                   object[['class_names']]),
+                    p_prior = object[['P']],
+                    se_prior = object[['P.se']]))
 
     }
 
@@ -203,14 +202,14 @@
 
       mod_vars <- components(object, type = 'variables')
 
-      preds <- tibble::as_tibble(object[['predcell']])
+      preds <- as_tibble(object[['predcell']])
 
-      levels <- purrr::map(object[['y']][mod_vars], levels)
+      levels <- map(object[['y']][mod_vars], levels)
 
       preds[mod_vars] <-
-        purrr::map2_dfc(preds[mod_vars],
-                        levels,
-                        ~factor(.y[.x], .y))
+        map2_dfc(preds[mod_vars],
+                 levels,
+                 ~factor(.y[.x], .y))
 
       return(preds)
 
@@ -220,26 +219,26 @@
 
       mod_vars <- components(object, type = 'variables')
 
-      levels <- purrr::map(object[['y']][mod_vars], levels)
+      levels <- map(object[['y']][mod_vars], levels)
 
       probs <- object[[type]]
 
       probs <-
-        purrr::map2(probs,
-                    levels,
-                    ~trafo::set_colnames(.x, .y))
+        map2(probs,
+             levels,
+             ~set_colnames(.x, .y))
 
-      probs <- purrr::map(probs, trafo::set_rownames, object[['class_names']])
+      probs <- map(probs, set_rownames, object[['class_names']])
 
-      probs <- purrr::map(probs,
-                          ~tibble::rownames_to_column(as.data.frame(.x),
-                                                     'class'))
+      probs <- map(probs,
+                   ~rownames_to_column(as.data.frame(.x),
+                                       'class'))
 
-      probs <- purrr::map(probs,
-                          dplyr::mutate,
-                          class = factor(class, object[['class_names']]))
+      probs <- map(probs,
+                   mutate,
+                   class = factor(class, object[['class_names']]))
 
-      return(purrr::map(probs, tibble::as_tibble))
+      return(map(probs, as_tibble))
 
     }
 
@@ -337,9 +336,9 @@
     suppressWarnings(
 
       post_p <-
-        try(poLCA::poLCA.posterior(lc = object,
-                                   y = newdata,
-                                   x = x),
+        try(poLCA.posterior(lc = object,
+                            y = newdata,
+                            x = x),
             silent = TRUE)
 
     )
@@ -350,7 +349,7 @@
 
         obs_id <- paste0('obs_', 1:nrow(newdata))
 
-        newdata <- trafo::set_rownames(newdata, obs_id)
+        newdata <- set_rownames(newdata, obs_id)
 
       } else {
 
@@ -358,27 +357,27 @@
 
       }
 
-      row_lst <- purrr::map(obs_id, ~newdata[.x, ])
+      row_lst <- map(obs_id, ~newdata[.x, ])
 
       post_p <-
-        purrr::map(row_lst,
-                   ~poLCA::poLCA.posterior(lc = object,
-                                           y = .x,
-                                           x = x))
+        map(row_lst,
+            ~poLCA.posterior(lc = object,
+                             y = .x,
+                             x = x))
 
       post_p <- do.call('rbind', post_p)
 
-      post_p <- trafo::set_rownames(post_p, obs_id)
+      post_p <- set_rownames(post_p, obs_id)
 
-      post_p <- trafo::set_colnames(post_p, object[['class_names']])
+      post_p <- set_colnames(post_p, object[['class_names']])
 
     }
 
     assignment <- nodal_vote(post_p, resolve_ties = resolve_ties)
 
-    post_p <- tibble::as_tibble(post_p)
+    post_p <- as_tibble(post_p)
 
-    post_p <- tibble::as_tibble(cbind(assignment, post_p))
+    post_p <- as_tibble(cbind(assignment, post_p))
 
     return(lca_assign(post_p))
 
